@@ -1,34 +1,24 @@
 const { Parse } = require('sprache');
 
-const Integer = Parse.digit.xAtLeastOnce().select(digits => {
-    return Number.parseInt(digits.join(''), 10);
-}).token().named('an integer');
+const Integer = Parse
+    .digit.xAtLeastOnce().text()
+    .select(digits => Number.parseInt(digits, 10))
+    .named('an integer');
 
-const Octal = Parse.query(function* () {
-    yield Parse.char("0")
-    const number = yield Parse.digit.xAtLeastOnce().select(digits => {
-        return Number.parseInt(digits.join(''), 8);
-    }).token().named('octal notation number');
-    return Parse.return(number)
-})
+const Octal = Parse
+    .regex(/0[0-7]+/)
+    .select(x => Number.parseInt(x, 8))
+    .named('octal notation number');
 
+const Hex = Parse
+    .regex(/0x[0-9a-fA-F]+/)
+    .select(x => Number.parseInt(x.replace('0x', ''), 16))
+    .named('a hex notation number');
 
-
-const Hex = Parse.query(function* () {
-    yield Parse.string("0x")
-    const number = yield Parse.letterOrDigit.xAtLeastOnce().select(digits => {
-        return Number.parseInt(digits.join(''), 16);
-    }).token().named('a binary value');
-    return Parse.return(number)
-})
-
-const Float = Parse.query(function* () {
-    const upperPart = yield Parse.digit.xAtLeastOnce()
-    yield Parse.char(".")
-    const lowerPart = yield Parse.digit.xAtLeastOnce()
-    const numberString = [...upperPart,'.',...lowerPart].join('')
-    return Parse.return(Number.parseFloat(numberString))
-})
+const Float = Parse
+    .regex(/[0-9]+\.[0-9]+/)
+    .select(x => Number.parseFloat(x))
+    .named('a floating point number');
 
 const FloatWithEmptyExponent = Parse.query(function* () {
     const number = yield Float
@@ -54,7 +44,7 @@ const UnsignedNumber = Parse.queryOr(function* () {
     yield Integer;
 })
 
-function generateSignedParser (numberParser){
+function generateSignedParser(numberParser) {
     return Parse.query(function* () {
         const sign = yield Parse.char(input => /\+|-/.test(input), "+ or - sign")
         const number = yield numberParser;
@@ -77,13 +67,10 @@ const NumberParser64bit = Parse.query(function* () {
     return Parse.return(number);
 })
 
-
 const NumberParser = Parse.queryOr(function* () {
     yield NumberParser64bit;
     yield MaybeSignedNumber;
 })
-
-// console.log(NumberParser.parse("95"))
 
 const StringParser = Parse.query(function* () {
     const first = yield Parse.char("\"");
@@ -93,19 +80,10 @@ const StringParser = Parse.query(function* () {
     return Parse.return(rest.join(''));
 })
 
-const BooleanParser = Parse.query(function* () {
-    const booleanLetters = yield Parse.queryOr(function* () {
-        yield Parse.ignoreCase("true")
-        yield Parse.ignoreCase("false")
-    })
-    const boolean = booleanLetters.join('').toLowerCase()
-    if(boolean !== "true" && boolean !== "false") {
-        console.log(boolean)
-        throw new Error("Impossible error");
-    }
-    return Parse.return(boolean === "true");
-})
-
+const BooleanParser = Parse
+    .ignoreCase("true").or(Parse.ignoreCase("false")).text()
+    .select(bool => bool.toLowerCase() === "true")
+    .named('a boolean');
 
 const scalarValue = Parse.query(function* () {
     const leading = yield Parse.whiteSpace.many();
@@ -118,8 +96,6 @@ const scalarValue = Parse.query(function* () {
     return Parse.return(value);
 })
 
-
 module.exports = {
-    Integer,
     scalarValue
 }
