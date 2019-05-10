@@ -22,24 +22,14 @@ const Hex = Parse.query(function* () {
     return Parse.return(number)
 })
 
-// const Float = Parse.char(c => /[0-9.]/.test(c),"number or '.'").many().select(digits => {
-//     // if(digits.includes('.'))
-//     //     throw new Error("not a float value, try integer instead")
-//     return Number.parseFloat(digits.join(''));
-// }).token().named('a float');
-
 const Float = Parse.query(function* () {
     const upperPart = yield Parse.digit.xAtLeastOnce()
     yield Parse.char(".")
-    const lowerPart = yield Parse.digit.many()
+    const lowerPart = yield Parse.digit.xAtLeastOnce()
     const numberString = [...upperPart,'.',...lowerPart].join('')
     return Parse.return(Number.parseFloat(numberString))
-//TODO: Exponent
-/* ...and an optional exponent. An
-exponent consists of the letter ‘ E ’ or ‘ e ’, an optional sign character, and a series
-of one or more digits. */
-
 })
+
 const FloatWithEmptyExponent = Parse.query(function* () {
     const number = yield Float
     yield Parse.ignoreCase("e")
@@ -84,7 +74,7 @@ const MaybeSignedNumber = Parse.queryOr(function* () {
 const NumberParser64bit = Parse.query(function* () {
     const number = yield MaybeSignedNumber;
     const last = yield Parse.char('L', "the Letter L for 64bit int").once();
-    return Parse.return("number");
+    return Parse.return(number);
 })
 
 

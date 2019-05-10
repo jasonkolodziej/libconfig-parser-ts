@@ -12,6 +12,6 @@
   "author": "LawnCable",
   "license": "GPL-3",
   "dependencies": {
-    "sprache": "^1.0.0-alpha.3"
+    "sprache": "^1.0.0-alpha.5"
   }
 }
