@@ -8,6 +8,7 @@ const tests = [
     'Identifier.test',
     'scalarValue.test',
     'AssignmentStatement.test',
+    'Comments.test',
 ]
 
 tests.forEach(testName => {
