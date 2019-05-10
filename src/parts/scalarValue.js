@@ -40,20 +40,41 @@ exponent consists of the letter ‘ E ’ or ‘ e ’, an optional sign charact
 of one or more digits. */
 
 })
+const FloatWithEmptyExponent = Parse.query(function* () {
+    const number = yield Float
+    yield Parse.ignoreCase("e")
+    return Parse.return(number)
+})
+
+const FloatWithExponent = Parse.query(function* () {
+    const coefficient = yield FloatWithEmptyExponent
+    const n = yield Parse.queryOr(function* () {
+        yield SignedInteger;
+        yield Integer;
+    })
+    return Parse.return(coefficient * Math.pow(10, n))
+})
 
 const UnsignedNumber = Parse.queryOr(function* () {
     yield Octal;
     yield Hex;
+    yield FloatWithExponent;
+    yield FloatWithEmptyExponent;
     yield Float;
     yield Integer;
 })
 
-const SignedNumber = Parse.query(function* () {
-    const sign = yield Parse.char(input => /\+|-/.test(input), "+ or - sign")
-    const number = yield UnsignedNumber;
-    return Parse.return((sign && sign == '-') ? -number : number)
-})
+function generateSignedParser (numberParser){
+    return Parse.query(function* () {
+        const sign = yield Parse.char(input => /\+|-/.test(input), "+ or - sign")
+        const number = yield numberParser;
+        return Parse.return((sign && sign == '-') ? -number : number)
+    })
+}
 
+const SignedNumber = generateSignedParser(UnsignedNumber)
+
+const SignedInteger = generateSignedParser(Integer)
 
 const MaybeSignedNumber = Parse.queryOr(function* () {
     yield SignedNumber;

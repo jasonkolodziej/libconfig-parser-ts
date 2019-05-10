@@ -22,10 +22,10 @@ Implemented after the [Specs](https://hyperrealm.github.io/libconfig/libconfig_m
             - [X] octal notation
             - [X] signed Integers
         - [X] 64-bit Integer (*ignores the 64bit part for now)
-        - [ ] Float
+        - [X] Float
             - [X] Normal Floats
             - [X] Signed Floats
-            - [ ] Exponents
+            - [X] Exponents
         - [X] Boolean
         - [X] Strings
         - [ ] Strings with escape sequences
