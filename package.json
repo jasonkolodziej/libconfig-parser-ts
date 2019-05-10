@@ -1,0 +1,17 @@
+{
+  "name": "libconfig-parser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node src/tests"
+  },
+  "keywords": [
+    "libconfig"
+  ],
+  "author": "LawnCable",
+  "license": "GPL-3",
+  "dependencies": {
+    "sprache": "^1.0.0-alpha.3"
+  }
+}
