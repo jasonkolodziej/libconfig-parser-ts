@@ -4,9 +4,9 @@ const { Parse } = require('sprache');
 /**
  * `# comment line`
  */
-const ScriptStyleComment = Parse.query(function*(){
+const ScriptStyleComment = Parse.query(function* () {
     yield Parse.char('#')
-    const content = yield Parse.char(c => !/\n/.test(c) , "chars exept for \\n").many()
+    const content = yield Parse.char(c => !/\n/.test(c), "chars exept for \\n").many()
     yield Parse.char('\n').optional()
 
     return Parse.return({
@@ -18,9 +18,9 @@ const ScriptStyleComment = Parse.query(function*(){
 /** 
  * `// comment line`
  */
-const CppComment = Parse.query(function*(){
+const CppComment = Parse.query(function* () {
     yield Parse.string('//')
-    const content = yield Parse.char(c => !/\n/.test(c) , "chars exept for \\n").many()
+    const content = yield Parse.char(c => !/\n/.test(c), "chars exept for \\n").many()
     yield Parse.char('\n').optional()
 
     return Parse.return({
@@ -29,20 +29,30 @@ const CppComment = Parse.query(function*(){
     })
 })
 
-const oneLineComment = Parse.queryOr(function*(){
+const oneLineComment = Parse.queryOr(function* () {
     yield ScriptStyleComment
     yield CppComment
 })
 /**
  * `/* comment *​/`
  */
-const CComment = Parse.query(function*(){
+const CComment = Parse.query(function* () {
     yield Parse.string('/*')
-    const content = yield Parse.char(c => {
-        const clast = content.length-1;
-        return !(c === '/' && content[clast] === '*')
-    }, "chars exept for comment end").many()
-    yield Parse.char('\n')
+    const content = []
+
+    while (true) { 
+        content.push(yield Parse.char(c => /[^\*]+/.test(c), "char except for *").many().text())
+
+        yield Parse.char("*")
+        const char = yield Parse.char(_ => true, "any char")
+        if (char === "/") {
+            break;
+        } else {
+            content.push("*", char)
+        }
+    }
+
+    yield Parse.char('\n').optional()
 
     return Parse.return({
         type: 'CStyle',

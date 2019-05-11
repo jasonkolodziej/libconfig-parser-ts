@@ -44,7 +44,8 @@ module.exports = new TestParser("Comments",
     ),
 
     // CComment
-    // new Assertion(.parse(""), { type: '', comment: "" }, ""),
-    // new Assertion(.parse(""), { type: '', comment: "" }, ""),
-    // new Assertion(.parse(""), { type: '', comment: "" }, ""),
+    new Assertion(CComment.parse("/* comment and it continues...\n in a new line */"), { type: 'CStyle', comment: " comment and it continues...\n in a new line " }, "with linebreak in between"),
+    new Assertion(CComment.parse("/* comment and it continues...\n in a new line \n in a new line */"), { type: 'CStyle', comment: " comment and it continues...\n in a new line \n in a new line " }, "with linebreaks in between"),
+    new Assertion(CComment.parse("/* comment and nothing else in one line */"), { type: 'CStyle', comment: " comment and nothing else in one line " }, "in one line"),
+    new Assertion(CComment.parse("/*stars **** ** *** ******* ** / / / /*  */"), { type: 'CStyle', comment: "stars **** ** *** ******* ** / / / /*  " }, "in one line"),
 )
