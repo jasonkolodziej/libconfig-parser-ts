@@ -1,4 +1,5 @@
 const { Parse } = require('sprache');
+const { AllComments } = require('./Comments')
 
 const Integer = Parse
     .digit.xAtLeastOnce().text()
@@ -112,7 +113,7 @@ const StringParser = Parse.query(function* () {
     while (!done) {
         rest.push(
             yield Parse.char(char => !/\"|\\/.test(char), "all chars except for \" or \\")
-            .many().text()
+                .many().text()
         )
         const n0 = yield Parse.char("\"").or(StringEscapeSequence)
         if (n0 === '"') done = true;
@@ -126,12 +127,36 @@ const BooleanParser = Parse
     .select(bool => bool.toLowerCase() === "true")
     .named('a boolean');
 
+const AdjacentStringPart = Parse.queryOr(function* () {
+    yield Parse.whiteSpace.atLeastOnce();
+    yield Parse.char("\n");
+    yield Parse.char("\t");
+})
+
+const AdjacentString = Parse.query(function* () {
+    let result = [yield StringParser]
+    let input = yield Parse.regex(/[^]+/) // get all input
+
+    while (true) {
+        const a = StringParser.tryParse(input)
+        const b = AdjacentStringPart.tryParse(input)
+        if (!a.wasSuccessful && a.wasSuccessful === b.wasSuccessful) { break }
+        const r = a.wasSuccessful ? a : b
+        input = input.slice(r.remainder.position)
+        result.push(a.wasSuccessful ? a.value : "")
+    }
+
+    return Parse.return(result.join(''));
+})
+
+
 const scalarValue = Parse.query(function* () {
     const leading = yield Parse.whiteSpace.many();
     const value = yield Parse.queryOr(function* () {
-        yield StringParser;
-        yield NumberParser;
-        yield BooleanParser;
+        yield AdjacentString
+        yield StringParser
+        yield NumberParser
+        yield BooleanParser
     })
     const trailing = yield Parse.whiteSpace.many();
     return Parse.return(value);

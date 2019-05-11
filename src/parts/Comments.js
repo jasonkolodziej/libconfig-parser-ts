@@ -40,7 +40,7 @@ const CComment = Parse.query(function* () {
     yield Parse.string('/*')
     const content = []
 
-    while (true) { 
+    while (true) {
         content.push(yield Parse.char(c => /[^\*]+/.test(c), "char except for *").many().text())
 
         yield Parse.char("*")
@@ -60,9 +60,36 @@ const CComment = Parse.query(function* () {
     })
 })
 
+const Comment = Parse.queryOr(function* () {
+    yield ScriptStyleComment
+    yield CppComment
+    yield CComment
+})
+
+const ParseComments = Parse.query(function* () {
+    const content = yield Parse.queryOr(function* () {
+        yield Comment
+        yield Parse.regex(/[^\#\/]+/)
+    }).many()
+    return Parse.return(
+        content.filter(item => typeof item === "object")
+    )
+})
+
+const RemoveComments = Parse.query(function* () {
+    const content = yield Parse.queryOr(function* () {
+        yield Comment
+        yield Parse.char("/").or(Parse.char("#"))
+        yield Parse.regex(/[^\#\/]+/)
+    }).many()
+    return Parse.return(
+        content.filter(item => typeof item !== "object").join('')
+    )
+})
+
+
 module.exports = {
-    ScriptStyleComment,
-    CppComment,
-    oneLineComment,
-    CComment,
+    Comment,
+    ParseComments,
+    RemoveComments,
 }
