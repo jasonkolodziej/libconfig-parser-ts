@@ -72,11 +72,52 @@ const NumberParser = Parse.queryOr(function* () {
     yield MaybeSignedNumber;
 })
 
+const StringEscapeSequence = Parse.query(function* () {
+
+    yield Parse.char("\\", "backslash")
+    const escapedChar = yield Parse.char(_ => true, "any char")
+    switch (escapedChar) {
+        case '"':
+            return Parse.return('q')
+            break;
+        case 'n':
+            return Parse.return('\n')
+            break;
+        case '\\':
+            return Parse.return('\\')
+            break;
+        case 'f':
+            return Parse.return("\f")
+            break;
+        case 'r':
+            return Parse.return("\r")
+            break;
+        case 't':
+            return Parse.return("\t")
+            break;
+        case 'x':
+            const a = yield Parse.regex(/[0-9a-fA-F]{2}/, "ascii numbers")
+            const c = String.fromCharCode(Number.parseInt(a, 16))
+            return Parse.return(c)
+            break
+        default:
+            return Parse.return(`\\${escapedChar}`)
+    }
+})
+
 const StringParser = Parse.query(function* () {
     const first = yield Parse.char("\"");
-    const rest = yield Parse.char(char => !/\"/.test(char), "string chars without support for \"").many();
-    // TODO: add support for escaped " and other
-    const last = yield Parse.char("\"");
+    let done = false
+    let rest = []
+    while (!done) {
+        rest.push(
+            yield Parse.char(char => !/\"|\\/.test(char), "all chars except for \" or \\")
+            .many().text()
+        )
+        const n0 = yield Parse.char("\"").or(StringEscapeSequence)
+        if (n0 === '"') done = true;
+        else rest.push(n0 === "q" ? "\"" : n0)
+    }
     return Parse.return(rest.join(''));
 })
 

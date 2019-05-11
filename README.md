@@ -16,7 +16,7 @@ Implemented after the [Specs](https://hyperrealm.github.io/libconfig/libconfig_m
     - [ ] Groups
     - [ ] Arrays
     - [ ] Lists
-    - [ ] scalar value
+    - [X] scalar value
         - [X] Integer
             - [X] hex notation
             - [X] decimal notation
@@ -29,4 +29,6 @@ Implemented after the [Specs](https://hyperrealm.github.io/libconfig/libconfig_m
             - [X] Exponents
         - [X] Boolean
         - [X] Strings
-        - [ ] Strings with escape sequences
+            - [X] Strings
+            - [X] Strings with escape sequences
+    - [ ] Adjacent strings are automatically concatenated

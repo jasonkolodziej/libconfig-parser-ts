@@ -44,5 +44,25 @@ module.exports = new TestParser("scalarValue",
     new Assertion(scalarValue.parse("\"test\""), "test", "string"),
     new Assertion(scalarValue.parse("\"4\""), "4", "number in string"),
     new Assertion(scalarValue.parse("\"Hello World\""), "Hello World", "string with whitespaces"),
+
+// strings
+    new Assertion(scalarValue.parse("\"Hello\\n World\""), "Hello\n World", "string with '\\n'"),
+    new Assertion(scalarValue.parse('"Hello \\" World \\""'), "Hello \" World \"", "string with '\\\"'"),
+    new Assertion(scalarValue.parse("\"Hello \\\" World \\\"\""), "Hello \" World \"", "string with '\\\"'"),
     
+// The escape sequences
+new Assertion(scalarValue.parse(String.raw`"o: \\xFF"`), "o: \\xFF", "escaped Hex asci code"),
+new Assertion(scalarValue.parse(String.raw`"\\n"`), "\\n", "escaped linebreak"),
+new Assertion(scalarValue.parse(String.raw`"\f"`), "\f", "\\f"),
+new Assertion(scalarValue.parse(String.raw`"\n"`), "\n", "\\n"),
+new Assertion(scalarValue.parse(String.raw`"\r"`), "\r", "\\r"),
+new Assertion(scalarValue.parse(String.raw`"\t"`), "\t", "\\t"),
+
+new Assertion(scalarValue.parse(String.raw`"\"Hi\""`), "\"Hi\"", "escaped \""),
+
+// string escape chars - ascii
+new Assertion(scalarValue.parse(String.raw`"\xd1 i"`), "\xd1 i", "Hex asci codes '\\xd1' (lowercase letter)"),
+new Assertion(scalarValue.parse(String.raw`"\xDF p"`), "\xDF p", "Hex asci codes '\\xDF'"),
+new Assertion(scalarValue.parse(String.raw`"0 \xFF y"`), "0 \xFF y", "Hex asci codes '\\xFF'"),
+
 )
