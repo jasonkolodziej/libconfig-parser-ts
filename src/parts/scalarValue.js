@@ -12,7 +12,7 @@ const Octal = Parse
     .named('octal notation number');
 
 const Hex = Parse
-    .regex(/0x[0-9a-fA-F]+/)
+    .regex(/0x[0-9a-f]+/i)
     .select(x => Number.parseInt(x.replace('0x', ''), 16))
     .named('a hex notation number');
 
@@ -97,7 +97,7 @@ const StringEscapeSequence = Parse.query(function* () {
             return Parse.return("\t")
             break;
         case 'x':
-            const a = yield Parse.regex(/[0-9a-fA-F]{2}/, "ascii numbers")
+            const a = yield Parse.regex(/[0-9a-f]{2}/i, "ascii numbers")
             const c = String.fromCharCode(Number.parseInt(a, 16))
             return Parse.return(c)
             break
