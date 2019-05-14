@@ -73,5 +73,6 @@ module.exports = new TestParser("scalarValue",
         new Assertion(scalarValue.parse('"hello " "world"'), "hello world", "Adjacent strings whitespace"),
         new Assertion(scalarValue.parse('"hello" \n" world"'), "hello world", "Adjacent strings linebreak"),
         new Assertion(scalarValue.parse('"hell\\"o " \n"world"'), "hell\"o world", "Adjacent strings linebreak + \""),
+        new Assertion(scalarValue.parse('<"hello \n world">'), "hello \n world", "<\"Multiline Strings\">"),
     )
 )

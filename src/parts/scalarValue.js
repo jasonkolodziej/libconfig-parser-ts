@@ -1,5 +1,5 @@
 const { Parse } = require('sprache');
-const { AllComments } = require('./Comments')
+const { space } = require("./space")
 
 const Integer = Parse
     .digit.xAtLeastOnce().text()
@@ -107,6 +107,7 @@ const StringEscapeSequence = Parse.query(function* () {
 })
 
 const StringParser = Parse.query(function* () {
+    yield Parse.char("<").optional()
     const first = yield Parse.char("\"");
     let done = false
     let rest = []
@@ -119,6 +120,7 @@ const StringParser = Parse.query(function* () {
         if (n0 === '"') done = true;
         else rest.push(n0 === "q" ? "\"" : n0)
     }
+    yield Parse.char(">").optional()
     return Parse.return(rest.join(''));
 })
 
@@ -127,19 +129,13 @@ const BooleanParser = Parse
     .select(bool => bool.toLowerCase() === "true")
     .named('a boolean');
 
-const AdjacentStringPart = Parse.queryOr(function* () {
-    yield Parse.whiteSpace.atLeastOnce();
-    yield Parse.char("\n");
-    yield Parse.char("\t");
-})
-
 const AdjacentString = Parse.query(function* () {
     let result = [yield StringParser]
-    let input = yield Parse.regex(/[^]+/) // get all input
+    let input = yield Parse.regex(/(?:\"(?:[^\"\\]|\\.)*\"|[\n\t\s]+)+/) // get all input
 
     while (true) {
         const a = StringParser.tryParse(input)
-        const b = AdjacentStringPart.tryParse(input)
+        const b = space.atLeastOnce().tryParse(input)
         if (!a.wasSuccessful && a.wasSuccessful === b.wasSuccessful) { break }
         const r = a.wasSuccessful ? a : b
         input = input.slice(r.remainder.position)
@@ -151,17 +147,38 @@ const AdjacentString = Parse.query(function* () {
 
 
 const scalarValue = Parse.query(function* () {
-    const leading = yield Parse.whiteSpace.many();
+    yield Parse.whiteSpace.many();
     const value = yield Parse.queryOr(function* () {
         yield AdjacentString
         yield StringParser
         yield NumberParser
         yield BooleanParser
     })
-    const trailing = yield Parse.whiteSpace.many();
+    yield Parse.whiteSpace.many();
     return Parse.return(value);
 })
 
+
+function makeArrayValueParser(base) {
+    return Parse.query(function* () {
+        yield space.many()
+        const value = yield base
+        yield space.many()
+        yield Parse.char(",").optional()
+        yield space.many()
+        return Parse.return(value)
+    }).atLeastOnce()
+}
+
+const ArrayElements = Parse.queryOr(function* () {
+    yield makeArrayValueParser(AdjacentString.or(StringParser))
+    // / Make this work \  /\
+    yield makeArrayValueParser(NumberParser)
+    yield makeArrayValueParser(BooleanParser)
+})
+
+
 module.exports = {
-    scalarValue
+    scalarValue,
+    ArrayElements,
 }

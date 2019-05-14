@@ -1,27 +1,79 @@
-const { Identifier } = require("./Identifier");
-const { scalarValue } = require("./scalarValue");
-const { Parse } = require('sprache');
+const { Identifier } = require("./Identifier")
+const { scalarValue, ArrayElements } = require("./scalarValue")
+const { Parse } = require('sprache')
+const { space } = require("./space");
 
 const AssignmentOperator = Parse.char(c => /:|=/.test(c), '=|: (assignment)')
 
-const SettingValue = Parse.queryOr(function*(){
-    yield scalarValue;
-    //TODO Array
-    //TODO Group
-    //TODO List
+const SettingValue = Parse.queryOr(function* () {
+    yield scalarValue
+    yield ArrayParser
+    yield Group
+    yield List
 })
 
-const AssignmentStatement = Parse.query(function* () {
+const Setting = Parse.query(function* () {
     const identifier = yield Identifier
     const assignmentOperator = yield AssignmentOperator
     const value = yield SettingValue
+    yield Parse.chars(";", ",").optional()
     return Parse.return({
+        type: "setting",
         key: identifier,
         value: value,
     })
 })
 
+const Group = Parse.query(function* () {
+    yield space.many()
+    yield Parse.char("{")
+    const raw_values = yield Parse.queryOr(function* () {
+        yield Setting
+        yield space.atLeastOnce().text()
+    }).many()
+    yield Parse.char("}")
+    yield space.many()
+
+    const values = raw_values.filter(i => typeof i === "object")
+
+    let group = {}
+    for (let i = 0; i < values.length; i++) {
+        const value = values[i];
+        group[value.key] = value.value
+    }
+
+    return Parse.return(group)
+})
+
+const ArrayParser = Parse.query(function* () {
+    yield space.many()
+    yield Parse.char("[")
+    const values = yield ArrayElements
+    yield Parse.char("]")
+    yield space.many()
+
+    return Parse.return(values)
+})
+
+const List = Parse.query(function*(){
+    yield space.many()
+    yield Parse.char("(")
+    const values = yield Parse.query(function*(){
+        value = yield SettingValue 
+        yield space.many()
+        yield Parse.char(",").optional()
+        yield space.many()
+        return Parse.return(value)
+    }).many()
+    yield Parse.char(")")
+    yield space.many()
+
+    return Parse.return(values)
+})
+
 module.exports = {
     AssignmentOperator,
-    AssignmentStatement,
+    Setting,
+    Group,
+    ArrayParser,
 }
