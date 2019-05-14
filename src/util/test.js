@@ -54,7 +54,7 @@ class TestParser {
             const output = this._generateOutput(errors, nestedLevel, failedChildTests)
             this._displayOutput(output)
             childOutput.forEach(output => this._displayOutput(output))
-            return (errors + failedChildTests) === 0
+            return (errors.length + failedChildTests) === 0
         } else {
             return this._generateOutput(errors, nestedLevel, failedChildTests)
         }

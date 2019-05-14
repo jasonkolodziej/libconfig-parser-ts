@@ -21,3 +21,4 @@ tests.forEach(testName => {
 })
 
 if(failed) process.exit(1)
+else process.exit(0)
