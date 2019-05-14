@@ -107,7 +107,6 @@ const StringEscapeSequence = Parse.query(function* () {
 })
 
 const StringParser = Parse.query(function* () {
-    yield Parse.char("<").optional()
     const first = yield Parse.char("\"");
     let done = false
     let rest = []
@@ -120,8 +119,14 @@ const StringParser = Parse.query(function* () {
         if (n0 === '"') done = true;
         else rest.push(n0 === "q" ? "\"" : n0)
     }
-    yield Parse.char(">").optional()
     return Parse.return(rest.join(''));
+})
+
+const MultilineStringParser = Parse.query(function* () {
+    yield Parse.string("<\"")
+    const content = yield Parse.regex(/((?!">)[^])+/)
+    yield Parse.string("\">")
+    return Parse.return(content);
 })
 
 const BooleanParser = Parse
@@ -153,6 +158,7 @@ const scalarValue = Parse.query(function* () {
         yield StringParser
         yield NumberParser
         yield BooleanParser
+        yield MultilineStringParser
     })
     yield Parse.whiteSpace.many();
     return Parse.return(value);

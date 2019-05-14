@@ -13,10 +13,11 @@ const SettingValue = Parse.queryOr(function* () {
 })
 
 const Setting = Parse.query(function* () {
+    yield space.many()
     const identifier = yield Identifier
     const assignmentOperator = yield AssignmentOperator
     const value = yield SettingValue
-    yield Parse.chars(";", ",").optional()
+    yield Parse.chars(";").optional()
     return Parse.return({
         type: "setting",
         key: identifier,
@@ -58,6 +59,7 @@ const ArrayParser = Parse.query(function* () {
 const List = Parse.query(function*(){
     yield space.many()
     yield Parse.char("(")
+    yield space.many()
     const values = yield Parse.query(function*(){
         value = yield SettingValue 
         yield space.many()
