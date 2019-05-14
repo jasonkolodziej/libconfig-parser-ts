@@ -48,12 +48,15 @@ class TestParser {
                 }
             }
         }
+        const failedChildTests = childOutput.filter(i => i.errors.length >= 1).length
+        //console.log(failedChildTests, childOutput.filter(i => return i.errors.length >= 1))
         if (nestedLevel === 0) {
-            const output = this._generateOutput(errors, nestedLevel)
+            const output = this._generateOutput(errors, nestedLevel, failedChildTests)
             this._displayOutput(output)
             childOutput.forEach(output => this._displayOutput(output))
+            return (errors + failedChildTests) === 0
         } else {
-            return this._generateOutput(errors, nestedLevel)
+            return this._generateOutput(errors, nestedLevel, failedChildTests)
         }
 
     }
@@ -65,12 +68,12 @@ class TestParser {
         }
     }
 
-    _generateOutput(errors, nestedLevel) {
+    _generateOutput(errors, nestedLevel, failedChildTests) {
         const prefix = nestedLevel > 0 ? (new Array(nestedLevel)).fill("-").join('') : ""
         return {
-            info: `${prefix}> ${this.part_name} (${this.assertions.length - errors.length}/${this.assertions.length})`,
+            info: `${prefix}> ${this.part_name} (${this.assertions.length - (errors.length + failedChildTests)}/${this.assertions.length})`,
             error_prefix: `${(new Array(nestedLevel + 2)).fill(" ").join('')}E)`,
-            errors: errors,
+            errors: errors
         }
     }
 }

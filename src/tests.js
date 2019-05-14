@@ -1,4 +1,4 @@
-const def = require('./parts/definition')
+//console.info = () => {}
 
 const { TestParser, Assertion } = require('./util/test')
 
@@ -10,11 +10,14 @@ const tests = [
     'AssignmentStatement.test',
     'Comments.test',
 ]
-
+let failed = false;
 tests.forEach(testName => {
     /**
      * @type {TestParser}
      */
     const test = require(`./parts/${testName}`)
-    test.runTest()
+    if(!test.runTest())
+        failed = true
 })
+
+if(failed) process.exit(1)
