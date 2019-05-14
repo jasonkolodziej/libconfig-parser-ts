@@ -38,13 +38,13 @@ Implemented after the [Specs](https://hyperrealm.github.io/libconfig/libconfig_m
 
 ## Stages/Steps:
 
-1. Writing code and tests for parsing
+1. Writing code and tests for parsing (wip)
 2. Optimizing code for parsing
 3. Writing code and tests for serialization to libconfig files
 
 
 ## Quirks
 
-- You can do mixed number types (floats and its in same array) in Arrays with is not possible with normal libconfig
+- You can do mixed number types (floats and its in same array) in Arrays which is not possible with normal libconfig
 
 - Multiline string with `<"` and `">` are not in the official specs, but **they are supported** by this module.
