@@ -18,7 +18,7 @@ function stripComments(input) {
  * @returns {{[key:string]:any}}
  */
 function parseString(input){
-    return stripComments(Group.parse(`{${input}}`))
+    return Group.parse(`{${stripComments(input)}}`)
 }
 
 /**
