@@ -9,6 +9,7 @@
   "keywords": [
     "libconfig"
   ],
+  "repository": {"type": "git", "url": "https://gitlab.com/LawnCable/libconfig-parser-js"},
   "author": "LawnCable",
   "license": "GPL-3",
   "dependencies": {

@@ -18,7 +18,7 @@ function stripComments(input) {
  * @returns {{[key:string]:any}}
  */
 function parseString(input){
-    return Group.parse(`{${input}}`)
+    return stripComments(Group.parse(`{${input}}`))
 }
 
 /**
@@ -29,7 +29,7 @@ function parseString(input){
  */
 function parseFile(filename, basedir, fileReadFunction=getFromFile){
     const content = include(fileReadFunction(filename, basedir), basedir, fileReadFunction)
-    return parseString(stripComments(content))
+    return parseString(content)
 }
 
 module.exports = {
