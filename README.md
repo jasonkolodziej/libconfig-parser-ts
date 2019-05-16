@@ -4,8 +4,8 @@ Implemented after the [Specs](https://hyperrealm.github.io/libconfig/libconfig_m
 
 ## Implementation Status
 
-- [ ] Parsing whole files
-    - [ ] read files
+- [X] Parsing whole files
+    - [X] read files
     - [X] Comments
         - [X] ignore them
         - [X] Script-style comments `# comment line`
@@ -36,11 +36,12 @@ Implemented after the [Specs](https://hyperrealm.github.io/libconfig/libconfig_m
 
 - [ ] serialization of js objects to libconfig files
 
-## Stages/Steps:
+## Stages/Steps/TODO:
 
-1. Writing code and tests for parsing (wip)
-2. Optimizing code for parsing
-3. Writing code and tests for serialization to libconfig files
+- Writing code and tests for parsing ✔️
+- Optimizing code for parsing
+- Writing code and tests for serialization to libconfig files
+- Documentation and examples
 
 
 ## Quirks

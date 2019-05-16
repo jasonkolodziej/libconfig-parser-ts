@@ -5,7 +5,7 @@ const { readFileSync } = require("fs");
  * @param {string} path 
  * @param {string} includedir 
  */
-function getFromFile(path, includedir) {
+function getFromFile(path, includedir) {    
     return readFileSync(join(includedir, path), "utf-8")
 }
 

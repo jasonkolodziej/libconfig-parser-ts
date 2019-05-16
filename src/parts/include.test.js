@@ -1,8 +1,8 @@
-const { TestParser, Assertion } = require('./util/test')
+const { TestParser, Assertion } = require('../util/test')
 const { join } = require("path")
 const { include, getFromFile } = require('./include')
 
-const dir = join(__dirname, "../testdata/include")
+const dir = join(__dirname, "../../testdata/include")
 
 module.exports = new TestParser("Include",
     new Assertion(include(getFromFile("includeConfig.cfg", dir), dir, getFromFile), getFromFile("expected.conf", dir), "basic include example"),

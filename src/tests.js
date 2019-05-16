@@ -9,7 +9,8 @@ const tests = [
     'parts/scalarValue.test',
     'parts/AssignmentStatement.test',
     'parts/Comments.test',
-    'include.test',
+    'parts/include.test',
+    'index.test',
 ]
 let failed = false;
 tests.forEach(testName => {
