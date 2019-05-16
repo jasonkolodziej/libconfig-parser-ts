@@ -5,17 +5,18 @@ const { TestParser, Assertion } = require('./util/test')
 console.info("Tests\n=====")
 
 const tests = [
-    'Identifier.test',
-    'scalarValue.test',
-    'AssignmentStatement.test',
-    'Comments.test',
+    'parts/Identifier.test',
+    'parts/scalarValue.test',
+    'parts/AssignmentStatement.test',
+    'parts/Comments.test',
+    'include.test',
 ]
 let failed = false;
 tests.forEach(testName => {
     /**
      * @type {TestParser}
      */
-    const test = require(`./parts/${testName}`)
+    const test = require(`./${testName}`)
     if(!test.runTest())
         failed = true
 })

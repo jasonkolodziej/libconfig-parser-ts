@@ -15,7 +15,7 @@ class Assertion {
         const aa = typeof this.actual === "object" ? JSON.stringify(this.actual) : this.actual
         const bb = typeof this.expected === "object" ? JSON.stringify(this.expected) : this.expected
         if (aa != bb) {
-            throw `${this.name} failed, expected ${aa} == ${bb}`
+            throw `${this.name} failed, expected [[ ${aa} ]] == [[ ${bb} ]]`
         } else {
             return true
         }

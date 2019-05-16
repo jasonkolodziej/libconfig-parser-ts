@@ -11,7 +11,7 @@ Implemented after the [Specs](https://hyperrealm.github.io/libconfig/libconfig_m
         - [X] Script-style comments `# comment line`
         - [X] C++-style comments `// comment line`
         - [X] C-style comments `/* comment */`
-    - [ ] Include Directives (maximum of 10 levels)
+    - [X] Include Directives (maximum of 10 levels)
 - [X] Settings
     - [X] Groups
     - [X] Arrays
