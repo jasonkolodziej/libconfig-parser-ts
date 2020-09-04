@@ -43,4 +43,9 @@ module.exports = new TestParser("Comments",
     new Assertion(Comment.parse("/* comment and it continues...\n in a new line \n in a new line */"), { type: 'CStyle', comment: " comment and it continues...\n in a new line \n in a new line " }, "with linebreaks in between"),
     new Assertion(Comment.parse("/* comment and nothing else in one line */"), { type: 'CStyle', comment: " comment and nothing else in one line " }, "in one line"),
     new Assertion(Comment.parse("/*stars **** ** *** ******* ** / / / /*  */"), { type: 'CStyle', comment: "stars **** ** *** ******* ** / / / /*  " }, "in one line"),
+    new Assertion(
+        Comment.parse("/******\n\n\n*****\n*******\n**************/"),
+        { type: 'CStyle', comment: "*****\n\n\n*****\n*******\n*************" },
+        "many stars"
+    ),
 )
