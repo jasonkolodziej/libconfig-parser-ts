@@ -38,25 +38,12 @@ const oneLineComment = Parse.queryOr(function* () {
  */
 const CComment = Parse.query(function* () {
     yield Parse.string('/*')
-    const content = []
-
-    while (true) {
-        content.push(yield Parse.char(c => /[^\*]+/.test(c), "char except for *").many().text())
-
-        yield Parse.char("*")
-        const char = yield Parse.char(_ => true, "any char")
-        if (char === "/") {
-            break;
-        } else {
-            content.push("*", char)
-        }
-    }
-
+    const content = yield Parse.char(_ => true, "any char").until(Parse.string('*/')).text()
     yield Parse.char('\n').optional()
 
     return Parse.return({
         type: 'CStyle',
-        comment: content.join('')
+        comment: content
     })
 })
 
